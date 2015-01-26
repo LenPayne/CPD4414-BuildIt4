@@ -16,12 +16,14 @@
 package cpd4414buildit4;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
 import javax.servlet.AsyncListener;
 import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.annotation.HttpConstraint;
 import javax.servlet.annotation.ServletSecurity;
 import javax.servlet.annotation.WebServlet;
@@ -47,8 +49,23 @@ public class FullExampleServlet extends HttpServlet {
             @Override
             public void onComplete(AsyncEvent event) throws IOException {
                 ServletRequest request = event.getSuppliedRequest();
+                ServletResponse response = event.getSuppliedResponse();
+                PrintWriter out = response.getWriter();
                 String contents = (String) request.getAttribute("contents");
-                event.getSuppliedResponse().getWriter().println(contents);
+                out.println("<!DOCTYPE html>");
+                out.println("<html>");
+                out.println("<head><title>End-to-End Example</title>");
+                out.println("<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css\">");
+                out.println("<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js\"></script>");
+                out.println("</head>");
+                out.println("<body>");
+                out.println("<div class=\"container\">");
+                out.println("<table class=\"table\">");
+                out.println(contents);
+                out.println("</table>");
+                out.println("</div>");
+                out.println("</body>");
+                out.println("</html>");
             }
 
             @Override
@@ -105,7 +122,8 @@ public class FullExampleServlet extends HttpServlet {
                     Statement stmt = connection.createStatement();
                     ResultSet rs = stmt.executeQuery(query);
                     while (rs.next()) {
-                        sb.append(String.format("%s\t%s\n", rs.getString("name"), rs.getString("age")));
+                        sb.append(String.format("<tr><td>%s</td><td>%s</td></tr>\n", 
+                                rs.getString("name"), rs.getString("age")));
                     }
                     connection.close();
                 } catch (SQLException e) {
