@@ -39,6 +39,7 @@ public class HelloServlet extends HttpServlet {
                 name = "World";
             }
             out.println("Hello " + name + "!");
+            request.getServletContext().getSessionCookieConfig().setHttpOnly(true);
             HttpSession session = request.getSession();
             if (session != null) {
                 String prevName = (String) session.getAttribute("prevName");
